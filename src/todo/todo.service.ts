@@ -1,5 +1,4 @@
 import { HttpException, Injectable } from '@nestjs/common';
-// import { resolve } from 'path/posix';
 import { TODOS } from './todo.mock.data';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class TodoService {
 
   getTodo(todoId): Promise<any> {
     return new Promise((resolve) => {
-      const todo = this.todos.find((todo) => todo.id == todoId);
+      const todo = this.todos.find((todo) => todo.id === todoId);
       if (!todo) {
         throw new HttpException(`No todo with ${todoId} ID exists`, 404);
       }
@@ -42,7 +41,7 @@ export class TodoService {
         throw new HttpException(`No such ID exists`, 404);
       }
       this.todos = this.todos.filter((todo) => {
-        todo.id !== id;
+        return todo.id !== id;
       });
       resolve(this.todos);
     });
