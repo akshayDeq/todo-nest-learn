@@ -1,11 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { TodoInterface } from './interface/todo.interface';
 import { TODOS } from './todo.mock.data';
 
 @Injectable()
 export class TodoService {
-  todos = TODOS;
+  private todos: TodoInterface[] = TODOS;
 
-  getTodos(): Promise<any> {
+  getTodos(): Promise<TodoInterface[]> {
     return new Promise((resolve) => {
       resolve(this.todos);
     });
@@ -21,7 +22,7 @@ export class TodoService {
     });
   }
 
-  postTodo(newTodo: { id: number; title: string[] }): Promise<any> {
+  postTodo(newTodo: { id: number; title: string[] }): Promise<TodoInterface[]> {
     return new Promise((resolve) => {
       const checkForUniqueID = this.todos.find(
         (todo) => todo.id === newTodo.id,
@@ -34,7 +35,7 @@ export class TodoService {
     });
   }
 
-  deleteTodo(id: number): Promise<any> {
+  deleteTodo(id: number): Promise<TodoInterface[]> {
     return new Promise((resolve) => {
       const checkIfIdExists = this.todos.find((todo) => todo.id === id);
       if (!checkIfIdExists) {
