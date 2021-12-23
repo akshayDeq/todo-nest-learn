@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { TodoInterface } from './interface/todo.interface';
 import { TODOS } from './todo.mock.data';
-
+import { UpdateTodoDto } from './dto/update-todo.dto';
 @Injectable()
 export class TodoService {
   private todos: TodoInterface[] = TODOS;
@@ -12,7 +12,7 @@ export class TodoService {
     });
   }
 
-  getTodo(todoId): Promise<any> {
+  getTodo(todoId: number): Promise<TodoInterface> {
     return new Promise((resolve) => {
       const todo = this.todos.find((todo) => todo.id === todoId);
       if (!todo) {
@@ -31,6 +31,20 @@ export class TodoService {
         throw new HttpException(`ID already exists`, 404);
       }
       this.todos.push(newTodo);
+      resolve(this.todos);
+    });
+  }
+
+  addMoreTodoItems(
+    todoId: number,
+    todoItems: UpdateTodoDto[],
+  ): Promise<TodoInterface[]> {
+    return new Promise((resolve) => {
+      const todoExists = this.todos.find((todo) => todo.id === todoId);
+      if (!todoExists) {
+        throw new HttpException('ID does not exists', 404);
+      }
+      todoItems.map((todoItem) => todoExists.title.push(todoItem.todoItem));
       resolve(this.todos);
     });
   }
