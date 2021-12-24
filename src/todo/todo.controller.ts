@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
@@ -22,7 +23,7 @@ export class TodoController {
       const todos = await this.todoService.getTodos();
       return todos;
     } catch (error) {
-      return error;
+      throw new InternalServerErrorException();
     }
   }
 
@@ -32,7 +33,9 @@ export class TodoController {
       const todo = await this.todoService.getTodo(todoId);
       return todo;
     } catch (error) {
-      return error;
+      throw new InternalServerErrorException({
+        description: `No todo with id:${todoId} found`,
+      });
     }
   }
 
@@ -42,7 +45,7 @@ export class TodoController {
       const todos = await this.todoService.postTodo(createTodoDto);
       return todos;
     } catch (error) {
-      return error;
+      throw new InternalServerErrorException();
     }
   }
 
@@ -52,7 +55,7 @@ export class TodoController {
       const todos = await this.todoService.deleteTodo(todoId);
       return todos;
     } catch (error) {
-      return error;
+      throw new InternalServerErrorException();
     }
   }
 
@@ -65,7 +68,7 @@ export class TodoController {
       const todos = await this.todoService.addMoreTodoItems(todoId, todoItems);
       return todos;
     } catch (error) {
-      return error;
+      throw new InternalServerErrorException();
     }
   }
 }
