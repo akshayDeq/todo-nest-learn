@@ -9,4 +9,11 @@ export class BcryptService {
       resolve(hash);
     });
   }
+
+  decryptPassword(password: string, hashedPassword: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const isMatch = bcrypt.compare(password, hashedPassword);
+      resolve(isMatch);
+    });
+  }
 }

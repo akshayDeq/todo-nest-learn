@@ -9,6 +9,7 @@ import { Users } from './entities/user.entity';
 import { UserModule } from './user/user.module';
 import { BcryptService } from './bcrypt/bcrypt.utility';
 import { BcryptModule } from './bcrypt/bcrypt.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { BcryptModule } from './bcrypt/bcrypt.module';
     }),
     UserModule,
     BcryptModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, BcryptService],

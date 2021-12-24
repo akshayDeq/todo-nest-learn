@@ -38,7 +38,9 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException({
+        description: `No user with id:${id} exists`,
+      });
     }
   }
 
@@ -48,12 +50,11 @@ export class UserService {
         1,
         password,
       );
-      console.log(hashedPassword);
-      const user = await this.userRepository.insert({
+      await this.userRepository.insert({
         username,
         password: hashedPassword,
       });
-      return user;
+      return { description: 'User created successfully' };
     } catch (error) {
       throw new ConflictException({ description: 'Username already exists' });
     }
@@ -61,8 +62,16 @@ export class UserService {
 
   async deleteUser(id: number): Promise<any> {
     try {
-      const user = await this.userRepository.delete({ id });
-      return user;
+      await this.userRepository.delete({ id });
+      return { description: `User deleted successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async loginUser(): Promise<any> {
+    try {
+      await this.userRepository.findOne();
     } catch (error) {
       throw new InternalServerErrorException();
     }
