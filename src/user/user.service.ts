@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BcryptService } from 'src/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,6 +15,7 @@ export class UserService {
   constructor(
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
+    private readonly bcryptService: BcryptService,
   ) {}
 
   async getUsers(): Promise<Users[]> {
@@ -42,10 +44,18 @@ export class UserService {
 
   async createUser({ username, password }: CreateUserDto): Promise<any> {
     try {
-      const user = await this.userRepository.insert({ username, password });
+      const hashedPassword = await this.bcryptService.encryptPassword(
+        1,
+        password,
+      );
+      console.log(hashedPassword);
+      const user = await this.userRepository.insert({
+        username,
+        password: hashedPassword,
+      });
       return user;
     } catch (error) {
-      throw new ConflictException();
+      throw new ConflictException({ description: 'Username already exists' });
     }
   }
 

@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Todo } from './entities/todo.entity';
 import { Users } from './entities/user.entity';
 import { UserModule } from './user/user.module';
+import { BcryptService } from './bcrypt/bcrypt.utility';
+import { BcryptModule } from './bcrypt/bcrypt.module';
 
 @Module({
   imports: [
@@ -21,8 +23,9 @@ import { UserModule } from './user/user.module';
       synchronize: true,
     }),
     UserModule,
+    BcryptModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, BcryptService],
 })
 export class AppModule {}
