@@ -5,6 +5,8 @@ import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Todo } from './entities/todo.entity';
+import { User } from './entities/user.entity';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -15,9 +17,10 @@ import { Todo } from './entities/todo.entity';
       database: process.env.POSTGRES_DATABASE,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      entities: [Todo],
+      entities: [Todo, User],
       synchronize: true,
     }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

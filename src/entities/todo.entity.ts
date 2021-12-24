@@ -5,6 +5,6 @@ export class Todo {
   @PrimaryColumn()
   id: number;
 
-  @Column({ nullable: true })
-  todoItem: string;
+  @Column({ array: true, nullable: true })
+  todoItems: string;
 }
