@@ -1,35 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BcryptService } from 'src/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Users)
-    private userRepository: Repository<Users>,
+    private readonly userRepository: Repository<Users>,
     private readonly bcryptService: BcryptService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ username });
-    const isMatch = await this.bcryptService.decryptPassword(
-      pass,
-      user.password,
-    );
-    if (user && isMatch) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+  async validateUser(userCredentials: Users): Promise<any> {
+    try {
+      const user = await this.userRepository.findOne({
+        username: userCredentials.username,
+      });
+      const isMatch = await this.bcryptService.decryptPassword(
+        userCredentials.password,
+        user.password,
+      );
+      if (user && isMatch) {
+        const { password, ...result } = user;
+        return result;
+      }
+      return null;
+    } catch (error) {}
+    throw new InternalServerErrorException();
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async login(user: Users) {
+    try {
+      const userValidation = await this.validateUser(user);
+      if (!userValidation) {
+        throw new BadRequestException();
+      }
+      const jwtPayload = {
+        username: userValidation.username,
+        password: userValidation.password,
+      };
+      const accessToken = this.jwtService.sign(jwtPayload);
+      return {
+        expires_in: 3600,
+        access_token: accessToken,
+        username: jwtPayload.username,
+        status: 200,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async validateJWT(token: string): Promise<boolean> {
+    try {
+      await this.jwtService.verify(token);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }
