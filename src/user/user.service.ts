@@ -18,6 +18,7 @@ export class UserService {
     private readonly bcryptService: BcryptService,
   ) {}
 
+  // get all user entries from database
   async getUsers(): Promise<Users[]> {
     try {
       const users = await this.userRepository.find();
@@ -30,6 +31,7 @@ export class UserService {
     }
   }
 
+  // get a user entry by ID from database
   async getUserById(id: number): Promise<Users> {
     try {
       const user = await this.userRepository.findOne({ where: { id } });
@@ -44,6 +46,7 @@ export class UserService {
     }
   }
 
+  // insert a new user into database
   async createUser({ username, password }: CreateUserDto): Promise<any> {
     try {
       const hashedPassword = await this.bcryptService.encryptPassword(
@@ -60,18 +63,11 @@ export class UserService {
     }
   }
 
+  // delete a user from database
   async deleteUser(id: number): Promise<any> {
     try {
       await this.userRepository.delete({ id });
       return { description: `User deleted successfully` };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async loginUser(): Promise<any> {
-    try {
-      await this.userRepository.findOne();
     } catch (error) {
       throw new InternalServerErrorException();
     }

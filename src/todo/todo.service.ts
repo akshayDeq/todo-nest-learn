@@ -1,64 +1,53 @@
-import { HttpException, Injectable } from '@nestjs/common';
-import { TodoInterface } from './interface/todo.interface';
-import { TODOS } from './todo.mock.data';
-import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Todo } from 'src/entities/todo.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 @Injectable()
 export class TodoService {
-  private todos: TodoInterface[] = TODOS;
+  constructor(
+    @InjectRepository(Todo)
+    private todoRepository: Repository<Todo>,
+  ) {}
 
-  getTodos(): Promise<TodoInterface[]> {
-    return new Promise((resolve) => {
-      resolve(this.todos);
-    });
+  // get all todo entries from database
+  async getTodos(): Promise<Todo[]> {
+    try {
+      const Todo = await this.todoRepository.find();
+      return Todo;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
-  getTodo(todoId: number): Promise<TodoInterface> {
-    return new Promise((resolve) => {
-      const todo = this.todos.find((todo) => todo.id === todoId);
-      if (!todo) {
-        throw new HttpException(`No todo with ${todoId} ID exists`, 404);
-      }
-      resolve(todo);
-    });
+  // get a todo entry by ID from database
+  async getTodo(todoId: number): Promise<Todo> {
+    try {
+      const todo = await this.todoRepository.findOne({ where: { id: todoId } });
+      return todo;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
-  postTodo(newTodo: { id: number; title: string[] }): Promise<TodoInterface[]> {
-    return new Promise((resolve) => {
-      const checkForUniqueID = this.todos.find(
-        (todo) => todo.id === newTodo.id,
-      );
-      if (checkForUniqueID) {
-        throw new HttpException(`ID already exists`, 404);
-      }
-      this.todos.push(newTodo);
-      resolve(this.todos);
-    });
-  }
-
-  addMoreTodoItems(
-    todoId: number,
-    todoItems: UpdateTodoDto[],
-  ): Promise<TodoInterface[]> {
-    return new Promise((resolve) => {
-      const todoExists = this.todos.find((todo) => todo.id === todoId);
-      if (!todoExists) {
-        throw new HttpException('ID does not exists', 404);
-      }
-      todoItems.map((todoItem) => todoExists.title.push(todoItem.todoItem));
-      resolve(this.todos);
-    });
-  }
-
-  deleteTodo(id: number): Promise<TodoInterface[]> {
-    return new Promise((resolve) => {
-      const checkIfIdExists = this.todos.find((todo) => todo.id === id);
-      if (!checkIfIdExists) {
-        throw new HttpException(`No such ID exists`, 404);
-      }
-      this.todos = this.todos.filter((todo) => {
-        return todo.id !== id;
+  // create a new todo entry into database
+  async postTodo(newTodo: { title: string }): Promise<any> {
+    try {
+      await this.todoRepository.insert({
+        todoItems: newTodo.title,
       });
-      resolve(this.todos);
-    });
+      return { description: 'Todo created successfully' };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // delete a todo entry from database
+  async deleteTodo(id: number): Promise<any> {
+    try {
+      await this.todoRepository.delete({ id });
+      return { description: `Todo deleted successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 }
