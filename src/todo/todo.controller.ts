@@ -6,11 +6,14 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('todos')
+@UseGuards(AuthGuard)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
