@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   ParseIntPipe,
   Post,
@@ -19,12 +20,14 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Get()
-  getTodos(): Promise<Todo[]> {
+  getTodos(): Promise<Todo[] | HttpException> {
     return this.todoService.getTodos();
   }
 
   @Get(':todoId')
-  getTodo(@Param('todoId', ParseIntPipe) todoId: number): Promise<Todo> {
+  getTodo(
+    @Param('todoId', ParseIntPipe) todoId: number,
+  ): Promise<Todo | HttpException> {
     return this.todoService.getTodo(todoId);
   }
 
@@ -34,9 +37,7 @@ export class TodoController {
   }
 
   @Delete(':todoId')
-  async deleteTodo(
-    @Param('todoId', ParseIntPipe) todoId: number,
-  ): Promise<any> {
+  deleteTodo(@Param('todoId', ParseIntPipe) todoId: number): Promise<any> {
     return this.todoService.deleteTodo(todoId);
   }
 }

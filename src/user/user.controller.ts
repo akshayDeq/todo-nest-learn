@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   ParseIntPipe,
   Post,
@@ -19,12 +20,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getUsers(): Promise<Users[]> {
+  getUsers(): Promise<Users[] | HttpException> {
     return this.userService.getUsers();
   }
 
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number): Promise<Users> {
+  getUserById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Users | HttpException> {
     return this.userService.getUserById(id);
   }
 
