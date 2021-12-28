@@ -45,7 +45,9 @@ export class AuthService {
         username: userValidation.username,
         password: userValidation.password,
       };
-      const accessToken = this.jwtService.sign(jwtPayload);
+      const accessToken = this.jwtService.sign(jwtPayload, {
+        expiresIn: 3600,
+      });
       return {
         expires_in: 3600,
         access_token: accessToken,
