@@ -6,12 +6,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users]),
+    ConfigModule.forRoot(),
     JwtModule.register({
-      secretOrPrivateKey: 'secretkey',
+      secret: process.env.JWT_SECRET_KEY,
     }),
   ],
   providers: [BcryptService, AuthService, AuthGuard],
