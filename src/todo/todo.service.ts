@@ -8,6 +8,7 @@ import {
 import { Todo } from 'src/entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateTodoDto } from './dto/create-todo.dto';
 @Injectable()
 export class TodoService {
   constructor(
@@ -44,10 +45,10 @@ export class TodoService {
   }
 
   // create a new todo entry into database
-  async postTodo(newTodo: { title: string }): Promise<any> {
+  async postTodo({ todoItems }: CreateTodoDto): Promise<any> {
     try {
       await this.todoRepository.insert({
-        todoItems: newTodo.title,
+        todoItems,
       });
       return { description: 'Todo created successfully' };
     } catch (error) {
@@ -60,10 +61,11 @@ export class TodoService {
     try {
       // check if todo with given id exists
       const todo = await this.todoRepository.findOne({ where: { id } });
+      console.log(todo);
 
       // return error if todo with id does not exists
       if (!todo) {
-        return new BadRequestException({ description: 'User does not exist' });
+        return new BadRequestException({ description: 'todo does not exist' });
       }
       // delete the todo
       await this.todoRepository.delete({ id });
