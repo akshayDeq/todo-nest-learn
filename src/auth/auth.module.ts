@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BcryptService } from 'src/bcrypt/bcrypt.utility';
+import { BcryptService } from 'src/utilities/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users]),
+    ConfigModule.forRoot(),
     JwtModule.register({
-      secretOrPrivateKey: 'secretkey',
+      secret: process.env.JWT_SECRET_KEY,
     }),
   ],
   providers: [BcryptService, AuthService, AuthGuard],

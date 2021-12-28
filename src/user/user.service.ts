@@ -1,11 +1,13 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BcryptService } from 'src/bcrypt/bcrypt.utility';
+import { BcryptService } from 'src/utilities/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,11 +21,12 @@ export class UserService {
   ) {}
 
   // get all user entries from database
-  async getUsers(): Promise<Users[]> {
+  async getUsers(): Promise<Users[] | HttpException> {
     try {
       const users = await this.userRepository.find();
-      if (!users) {
-        throw new HttpException('No users in database', 404);
+      // return not found exception if users table is empty
+      if (!users.length) {
+        return new NotFoundException('No users in database');
       }
       return users;
     } catch (error) {
@@ -32,27 +35,28 @@ export class UserService {
   }
 
   // get a user entry by ID from database
-  async getUserById(id: number): Promise<Users> {
+  async getUserById(id: number): Promise<Users | HttpException> {
     try {
       const user = await this.userRepository.findOne({ where: { id } });
+      // return not found exception if users id does not exists
       if (!user) {
-        throw new HttpException('User does not exist', 404);
+        return new NotFoundException('User does not exist');
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException({
-        description: `No user with id:${id} exists`,
-      });
+      throw new InternalServerErrorException();
     }
   }
 
   // insert a new user into database
   async createUser({ username, password }: CreateUserDto): Promise<any> {
     try {
+      // hash the user entered password using the bcrypt service
       const hashedPassword = await this.bcryptService.encryptPassword(
         1,
         password,
       );
+      // save the username & hashed password in users table
       await this.userRepository.insert({
         username,
         password: hashedPassword,
@@ -66,6 +70,12 @@ export class UserService {
   // delete a user from database
   async deleteUser(id: number): Promise<any> {
     try {
+      // check if the user with given id exists
+      const user = await this.userRepository.findOne({ where: { id } });
+      // if the user does not exists return a not found exception
+      if (!user) {
+        return new BadRequestException({ description: 'User does not exist' });
+      }
       await this.userRepository.delete({ id });
       return { description: `User deleted successfully` };
     } catch (error) {

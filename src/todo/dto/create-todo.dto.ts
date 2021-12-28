@@ -1,8 +1,13 @@
-import { MaxLength } from 'class-validator';
+import { ArrayNotEmpty, IsArray, MaxLength, MinLength } from 'class-validator';
 
 export class CreateTodoDto {
-  @MaxLength(5, {
+  @IsArray()
+  @ArrayNotEmpty()
+  @MinLength(10, {
     each: true,
   })
-  readonly title: string;
+  @MaxLength(50, {
+    each: true,
+  })
+  readonly todoItems: string;
 }

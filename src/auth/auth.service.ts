@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BcryptService } from 'src/bcrypt/bcrypt.utility';
+import { BcryptService } from 'src/utilities/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -45,7 +45,9 @@ export class AuthService {
         username: userValidation.username,
         password: userValidation.password,
       };
-      const accessToken = this.jwtService.sign(jwtPayload);
+      const accessToken = this.jwtService.sign(jwtPayload, {
+        expiresIn: 3600,
+      });
       return {
         expires_in: 3600,
         access_token: accessToken,
