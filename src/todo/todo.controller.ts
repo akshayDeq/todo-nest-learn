@@ -32,8 +32,8 @@ export class TodoController {
   }
 
   @Post()
-  postTodo(@Body() createTodoDto: CreateTodoDto): Promise<any> {
-    return this.todoService.postTodo(createTodoDto);
+  createTodo(@Body() createTodoDto: CreateTodoDto): Promise<any> {
+    return this.todoService.createTodo(createTodoDto);
   }
 
   @Delete(':todoId')

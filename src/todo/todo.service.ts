@@ -45,12 +45,12 @@ export class TodoService {
   }
 
   // create a new todo entry into database
-  async postTodo({ todoItems }: CreateTodoDto): Promise<any> {
+  async createTodo({ todoItems }: CreateTodoDto): Promise<any> {
     try {
       await this.todoRepository.insert({
         todoItems,
       });
-      return { description: 'Todo created successfully' };
+      return { message: 'Todo created successfully' };
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -65,11 +65,11 @@ export class TodoService {
 
       // return error if todo with id does not exists
       if (!todo) {
-        return new BadRequestException({ description: 'todo does not exist' });
+        return new BadRequestException({ message: 'todo does not exist' });
       }
       // delete the todo
       await this.todoRepository.delete({ id });
-      return { description: `Todo deleted successfully` };
+      return { message: `Todo deleted successfully` };
     } catch (error) {
       throw new InternalServerErrorException();
     }

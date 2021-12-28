@@ -51,19 +51,26 @@ export class UserService {
   // insert a new user into database
   async createUser({ username, password }: CreateUserDto): Promise<any> {
     try {
-      // hash the user entered password using the bcrypt service
-      const hashedPassword = await this.bcryptService.encryptPassword(
-        1,
-        password,
-      );
-      // save the username & hashed password in users table
-      await this.userRepository.insert({
-        username,
-        password: hashedPassword,
-      });
-      return { description: 'User created successfully' };
+      // call the checkUserAlreadyExists function
+      const checkIfUserExists = await this.checkUserAlreadyExists(username);
+
+      // create a new user if it does not exists
+      if (!checkIfUserExists) {
+        // hash the user entered password using the bcrypt service
+        const hashedPassword = await this.bcryptService.encryptPassword(
+          1,
+          password,
+        );
+        // save the username & hashed password in users table
+        await this.userRepository.insert({
+          username,
+          password: hashedPassword,
+        });
+        return { message: 'User created successfully' };
+      }
+      return new ConflictException({ message: 'User already exists' });
     } catch (error) {
-      throw new ConflictException({ description: 'Username already exists' });
+      throw new InternalServerErrorException();
     }
   }
 
@@ -74,10 +81,23 @@ export class UserService {
       const user = await this.userRepository.findOne({ where: { id } });
       // if the user does not exists return a not found exception
       if (!user) {
-        return new BadRequestException({ description: 'User does not exist' });
+        return new BadRequestException({ message: 'User does not exist' });
       }
       await this.userRepository.delete({ id });
-      return { description: `User deleted successfully` };
+      return { message: `User deleted successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // function to check if user already exists in database
+  async checkUserAlreadyExists(username: string): Promise<boolean> {
+    try {
+      const user = await this.userRepository.findOne({ where: { username } });
+      if (!user) {
+        return false;
+      }
+      return true;
     } catch (error) {
       throw new InternalServerErrorException();
     }
