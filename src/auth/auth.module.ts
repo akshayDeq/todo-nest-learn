@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BcryptService } from 'src/bcrypt/bcrypt.utility';
+import { BcryptService } from 'src/utilities/bcrypt/bcrypt.utility';
 import { Users } from 'src/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
