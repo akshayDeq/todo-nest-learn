@@ -15,10 +15,14 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // if the response is of type object
     function encryptObject(object: any): any {
+      // if the object is a js object datatype
       if (typeof object === 'object') {
         const keys = Object.keys(object);
+
+        // logic to encode the values of object
         keys.forEach(
           (val) =>
+            // encode string to base64
             (object[val] = Buffer.from(object[val].toString()).toString(
               'base64',
             )),
@@ -26,7 +30,9 @@ export class LoggingInterceptor implements NestInterceptor {
         return object;
       }
 
+      // if data type of object is string or number
       if (typeof object === 'string' || 'number') {
+        // encode string to base64
         return Buffer.from(object.toString()).toString('base64');
       }
       return {};
@@ -34,18 +40,24 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // if the response is of type array of objects
     function encryptArray(object: Array<string>): Array<string> {
+      // create a deep copy of the object to log
       const deepCopy = JSON.parse(JSON.stringify(object));
+
+      // check if object is an array
       const isArray = Array.isArray(deepCopy);
       if (isArray) {
+        // logic to encode the values of object array
         const keys = Object.keys(deepCopy[0]);
         deepCopy.forEach((val) =>
           keys.forEach(
             (key) =>
+              // encode string to base64
               (val[key] = Buffer.from(val[key].toString()).toString('base64')),
           ),
         );
         return deepCopy;
       }
+      // if the object is not an array call the encrypt object function
       return encryptObject(deepCopy);
     }
     return next.handle().pipe(
