@@ -3,10 +3,9 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  HttpException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -25,6 +24,10 @@ export class LoggingInterceptor implements NestInterceptor {
             )),
         );
         return object;
+      }
+
+      if (typeof object === 'string' || 'number') {
+        return Buffer.from(object.toString()).toString('base64');
       }
       return {};
     }
@@ -62,6 +65,7 @@ export class LoggingInterceptor implements NestInterceptor {
           console.log('Params => ', encryptArray(request.params));
         }
         // print the status code
+        console.log('Status Code => ', encryptArray(response.statusCode));
       }),
 
       map((data) => {
