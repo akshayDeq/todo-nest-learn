@@ -8,14 +8,17 @@ import {
   ParseIntPipe,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Users } from 'src/entities/user.entity';
+import { LoggingInterceptor } from 'src/logger/logger.interceptor';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 
 @Controller('users')
 @UseGuards(AuthGuard)
+@UseInterceptors(LoggingInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
