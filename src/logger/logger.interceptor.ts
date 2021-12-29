@@ -13,30 +13,64 @@ export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
+
+    // if the response is of type object
+    function encryptObject(object: any): any {
+      if (typeof object === 'object') {
+        const keys = Object.keys(object);
+        keys.forEach(
+          (val) =>
+            (object[val] = Buffer.from(object[val].toString()).toString(
+              'base64',
+            )),
+        );
+        return object;
+      }
+      return {};
+    }
+
+    // if the response is of type array of objects
+    function encryptArray(object: Array<string>): Array<string> {
+      const deepCopy = JSON.parse(JSON.stringify(object));
+      const isArray = Array.isArray(deepCopy);
+      if (isArray) {
+        const keys = Object.keys(deepCopy[0]);
+        deepCopy.forEach((val) =>
+          keys.forEach(
+            (key) =>
+              (val[key] = Buffer.from(val[key].toString()).toString('base64')),
+          ),
+        );
+        return deepCopy;
+      }
+      return encryptObject(deepCopy);
+    }
     return next.handle().pipe(
       tap(() => {
         console.log('=====================================');
+        // print the request url
         console.log('Path => ', request.path);
+        // print the request method
         console.log('Request Type =>', request.method);
+
+        // print the request body
         if (Object.keys(request.body).length) {
-          console.log('Body => ', request.body);
+          console.log('Body => ', encryptArray(request.body));
         }
+        // print the request paramaters
         if (Object.keys(request.params).length) {
-          console.log('Params => ', request.params);
+          console.log('Params => ', encryptArray(request.params));
         }
-        console.log('Status Code =>', response.statusCode);
+        // print the status code
       }),
 
       map((data) => {
         // Data is the return value of the route
-        console.log('Response => ', data);
+
+        // print the response data on console
+        console.log('Response => ', encryptArray(data));
         console.log('=====================================');
         return data;
-      }),
-
-      catchError(() => {
-        console.error('interceptor error');
-        throw new HttpException({ message: 'interceptor error' }, 500);
       }),
     );
   }
