@@ -6,16 +6,21 @@ import {
   HttpException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Todo } from 'src/entities/todo.entity';
+import { LoggingInterceptor } from 'src/logger/logger.interceptor';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
 @Controller('todos')
 @UseGuards(AuthGuard)
+@UseInterceptors(LoggingInterceptor)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
@@ -39,5 +44,13 @@ export class TodoController {
   @Delete(':todoId')
   deleteTodo(@Param('todoId', ParseIntPipe) todoId: number): Promise<any> {
     return this.todoService.deleteTodo(todoId);
+  }
+
+  @Patch(':todoId')
+  updateTodoById(
+    @Param('todoId', ParseIntPipe) todoId: number,
+    @Body() updateTodoItems: UpdateTodoDto,
+  ): Promise<any> {
+    return this.todoService.updateTodoById(todoId, updateTodoItems);
   }
 }

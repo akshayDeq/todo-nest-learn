@@ -9,6 +9,7 @@ import { Todo } from 'src/entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 @Injectable()
 export class TodoService {
   constructor(
@@ -70,6 +71,29 @@ export class TodoService {
       // delete the todo
       await this.todoRepository.delete({ id });
       return { message: `Todo deleted successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // update an existing todo
+  async updateTodoById(
+    todoId: number,
+    { updateTodoItems }: UpdateTodoDto,
+  ): Promise<any> {
+    try {
+      // check if the todo with todoId exists in database
+      const todo = await this.todoRepository.findOne({ where: { id: todoId } });
+      // return an exception if todoId does not exist
+      if (!todo) {
+        return new BadRequestException({ message: 'todo does not exist' });
+      }
+      // update the todo data
+      await this.todoRepository.update(
+        { id: todoId },
+        { todoItems: updateTodoItems },
+      );
+      return { message: 'Todo updated successfully' };
     } catch (error) {
       throw new InternalServerErrorException();
     }
