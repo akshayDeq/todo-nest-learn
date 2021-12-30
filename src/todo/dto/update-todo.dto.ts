@@ -1,7 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateTodoDto {
-  @IsString()
-  @IsNotEmpty()
-  readonly todoItem: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @MinLength(10, {
+    each: true,
+  })
+  @MaxLength(50, {
+    each: true,
+  })
+  readonly updateTodoItems: string;
 }
