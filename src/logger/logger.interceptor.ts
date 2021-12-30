@@ -31,7 +31,7 @@ export class LoggingInterceptor implements NestInterceptor {
       }
 
       // if data type of object is string or number
-      if (typeof object === 'string' || 'number') {
+      if (typeof object === 'string' || 'number' || 'boolean') {
         // encode string to base64
         return Buffer.from(object.toString()).toString('base64');
       }
