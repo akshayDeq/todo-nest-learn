@@ -13,7 +13,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
 
-    // if the response is of type object
+    // function to encrypt data in JS object
     function encryptObject(object: any): any {
       // if the object is a js object datatype
       if (typeof object === 'object') {
@@ -38,7 +38,7 @@ export class LoggingInterceptor implements NestInterceptor {
       return {};
     }
 
-    // if the response is of type array of objects
+    // function to encrypt data in array of objects
     function encryptArray(object: Array<string>): Array<string> {
       // create a deep copy of the object to log
       const deepCopy = JSON.parse(JSON.stringify(object));
