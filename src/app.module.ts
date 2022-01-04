@@ -14,13 +14,15 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TodoModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      database: process.env.POSTGRES_DATABASE,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
+      url: process.env.DATABASE_URL,
+      // database: process.env.POSTGRES_DB,
+      // username: process.env.POSTGRES_USER,
+      // password: process.env.POSTGRES_PASSWORD,
       entities: [Todo, Users],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     UserModule,
