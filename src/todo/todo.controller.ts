@@ -19,7 +19,6 @@ import { LoggingInterceptor } from 'src/logger/logger.interceptor';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 
 @Controller('todos')
-@UseGuards(AuthGuard)
 @UseInterceptors(LoggingInterceptor)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
@@ -37,11 +36,13 @@ export class TodoController {
   }
 
   @Post()
+  @UseGuards(AuthGuard)
   createTodo(@Body() createTodoDto: CreateTodoDto): Promise<any> {
     return this.todoService.createTodo(createTodoDto);
   }
 
   @Delete(':todoId')
+  @UseGuards(AuthGuard)
   deleteTodo(@Param('todoId', ParseIntPipe) todoId: number): Promise<any> {
     return this.todoService.deleteTodo(todoId);
   }

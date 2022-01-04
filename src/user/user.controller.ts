@@ -17,17 +17,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 
 @Controller('users')
-@UseGuards(AuthGuard)
 @UseInterceptors(LoggingInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   getUsers(): Promise<Users[] | HttpException> {
     return this.userService.getUsers();
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard)
   getUserById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Users | HttpException> {
@@ -40,6 +41,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   deleteUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
     return this.userService.deleteUser(id);
   }
