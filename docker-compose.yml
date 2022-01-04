@@ -13,9 +13,6 @@ services:
       NODE_ENV: development
       PORT: 3000
       DATABASE_URL: postgres://todouser:todopass@postgres:5432/tododb
-      POSTGRES_USER: todouser
-      POSTGRES_PASSWORD: todopass
-      POSTGRES_DB: tododb
     ports:
       - '3000:3000'
 
