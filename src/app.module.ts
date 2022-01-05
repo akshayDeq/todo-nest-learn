@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
+      port: 5432,
       url: process.env.DATABASE_URL,
       entities: [Todo, Users],
       autoLoadEntities: true,
