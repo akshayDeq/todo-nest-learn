@@ -13,9 +13,9 @@ import {
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Todo } from 'src/entities/todo.entity';
-import { LoggingInterceptor } from 'src/logger/logger.interceptor';
+import { AuthGuard } from '../auth/auth.guard';
+import { Todo } from '../entities/todo.entity';
+import { LoggingInterceptor } from '../logger/logger.interceptor';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 
 @Controller('todos')

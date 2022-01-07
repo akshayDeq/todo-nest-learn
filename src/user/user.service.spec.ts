@@ -1,18 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Users } from '../entities/user.entity';
+import { Repository } from 'typeorm';
 import { UserService } from './user.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
 
-describe('UserService', () => {
-  let service: UserService;
-
+describe('user service unit tests', () => {
+  let spyService: UserService;
+  let userRepository: Repository<Users>;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService],
+      providers: [
+        UserService,
+        BcryptService,
+        {
+          provide: getRepositoryToken(Users),
+          useClass: Repository,
+        },
+      ],
     }).compile();
 
-    service = module.get<UserService>(UserService);
+    spyService = module.get<UserService>(UserService);
+    userRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(spyService).toBeDefined();
+    expect(userRepository).toBeDefined();
   });
 });

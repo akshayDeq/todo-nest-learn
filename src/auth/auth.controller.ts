@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Users } from 'src/entities/user.entity';
-import { LoggingInterceptor } from 'src/logger/logger.interceptor';
+import { Users } from '../entities/user.entity';
+import { LoggingInterceptor } from '../logger/logger.interceptor';
 
 @Controller('auth')
 @UseInterceptors(LoggingInterceptor)

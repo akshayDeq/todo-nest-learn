@@ -10,9 +10,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Users } from 'src/entities/user.entity';
-import { LoggingInterceptor } from 'src/logger/logger.interceptor';
+import { AuthGuard } from '../auth/auth.guard';
+import { Users } from '../entities/user.entity';
+import { LoggingInterceptor } from '../logger/logger.interceptor';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 

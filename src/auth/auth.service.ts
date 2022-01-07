@@ -4,8 +4,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BcryptService } from 'src/utilities/bcrypt/bcrypt.utility';
-import { Users } from 'src/entities/user.entity';
+import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { Users } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
