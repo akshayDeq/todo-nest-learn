@@ -51,11 +51,11 @@ export class UserService {
   // insert a new user into database
   async createUser({ username, password }: CreateUserDto): Promise<any> {
     try {
-      // call the checkUserAlreadyExists function
-      const checkIfUserExists = await this.checkUserAlreadyExists(username);
+      // call the checkUsernameExists function
+      const checkIfUsernameExists = await this.checkUsernameExists(username);
 
       // create a new user if it does not exists
-      if (!checkIfUserExists) {
+      if (!checkIfUsernameExists) {
         // hash the user entered password using the bcrypt service
         const hashedPassword = await this.bcryptService.encryptPassword(
           1,
@@ -91,7 +91,7 @@ export class UserService {
   }
 
   // function to check if user already exists in database
-  async checkUserAlreadyExists(username: string): Promise<boolean> {
+  async checkUsernameExists(username: string): Promise<boolean> {
     try {
       const user = await this.userRepository.findOne({ where: { username } });
       if (!user) {
