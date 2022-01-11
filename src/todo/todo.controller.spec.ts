@@ -42,9 +42,4 @@ describe('TodoController', () => {
     expect(todoController).toBeDefined();
     expect(spyService).toBeDefined();
   });
-
-  it('should get all todos', () => {
-    todoController.getTodos();
-    expect(spyService.getTodos).toHaveBeenCalled();
-  });
 });

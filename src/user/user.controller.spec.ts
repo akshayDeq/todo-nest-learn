@@ -7,24 +7,26 @@ import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
+import { UserStub } from './user.stub';
 
 describe('user controller unit tests', () => {
   let userController: UserController;
   let spyService: UserService;
-  // let usersRepository: Repository<Users>;
+  const userStub = new UserStub();
 
   const mockUserService = {
     getUsers: jest.fn(() => {
-      return [{}];
+      return userStub.getUsers();
     }),
-    createUser: jest.fn((dto) => {
-      return { id: Date.now(), username: dto.username, password: dto.password };
+    createUser: jest.fn(({ username, password }) => {
+      return userStub.createUser({ username, password });
     }),
     getUserById: jest.fn((id) => {
-      return { id, username: 'akshay', password: 'hashpass' };
+      return userStub.getUserById(id);
     }),
     deleteUser: jest.fn((id) => {
-      return { message: `userId:${id} deleted successfully` };
+      if (id == 1) return userStub.deleteUser(id);
+      return { message: `UserId:${id} does not exists` };
     }),
   };
 
@@ -48,7 +50,6 @@ describe('user controller unit tests', () => {
 
     spyService = module.get<UserService>(UserService);
     userController = module.get<UserController>(UserController);
-    // usersRepository = module.get<Repository<Users>>(getRepositoryToken(Users));
   });
 
   it('should be defined', () => {
@@ -57,23 +58,21 @@ describe('user controller unit tests', () => {
   });
 
   it('should return all users', () => {
-    expect(userController.getUsers()).toEqual([{}]);
+    expect(userController.getUsers()).toEqual(userStub.getUsers());
     expect(mockUserService.getUsers).toHaveBeenCalled();
   });
 
   it('should create a user', () => {
     expect(
       userController.createUser({ username: 'akshay', password: 'hashpass' }),
-    ).toEqual({ id: Date.now(), username: 'akshay', password: 'hashpass' });
+    ).toEqual(
+      userStub.createUser({ username: 'akshay', password: 'hashpass' }),
+    );
     expect(mockUserService.createUser).toHaveBeenCalled();
   });
 
   it('should return a user by id', () => {
-    expect(userController.getUserById(1)).toEqual({
-      id: 1,
-      username: 'akshay',
-      password: 'hashpass',
-    });
+    expect(userController.getUserById(1)).toEqual(userStub.getUserById(1));
     expect(mockUserService.getUserById).toHaveBeenCalledWith(1);
   });
 

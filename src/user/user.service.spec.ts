@@ -4,7 +4,6 @@ import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
 import { Repository } from 'typeorm';
-import { ConflictException } from '@nestjs/common';
 
 describe('user service unit tests', () => {
   let service: UserService;
@@ -18,24 +17,17 @@ describe('user service unit tests', () => {
   const mockUsers = [{ id: 1, ...mockUser }];
 
   const mockRepo = {
-    insert: jest.fn(),
+    insert: jest.fn(({ username, password }) => {
+      return { message: 'User created successfully' };
+    }),
     find: jest.fn(() => {
       return mockUsers;
     }),
     findOne: jest.fn(({ where: { field } }) => {
-      switch (field) {
-        case 1:
-        case 'akshaytest':
-          return { ...mockUser };
-        default:
-          return null;
-      }
+      return { id: 1, ...mockUser };
     }),
     delete: jest.fn(({ id }) => {
-      if (id == 1) {
-        return { message: 'User deleted successfully' };
-      }
-      return null;
+      return { message: 'User deleted successfully' };
     }),
   };
 
@@ -61,28 +53,31 @@ describe('user service unit tests', () => {
   });
 
   it('should find a user by id', async () => {
-    expect(await service.getUserById(1)).toEqual({ id: 1, ...mockUser });
+    await expect(service.getUserById(1)).resolves.toEqual({
+      id: 1,
+      ...mockUser,
+    });
   });
 
   it('should get all users in database', async () => {
-    expect(await service.getUsers()).toEqual(mockUsers);
+    await expect(service.getUsers()).resolves.toEqual(mockUsers);
   });
 
   it('should check if user already exists', async () => {
-    expect(await service.checkUserAlreadyExists('akshaytest')).toEqual(false);
+    await expect(service.checkUsernameExists('akshaytest')).resolves.toBe(true);
   });
 
-  it('should insert a new user in database', async () => {
+  it('should insert a new user in database', () => {
     expect(
-      await service.createUser({
+      service.createUser({
         username: 'akshaytest',
         password: 'akshaypass',
       }),
-    ).toEqual(new ConflictException({ message: 'User already exists' }));
+    ).resolves.toEqual({ message: 'User created successfully' });
   });
 
-  it('should delete a user', async () => {
-    expect(await service.deleteUser(1)).toEqual({
+  it('should delete a user', () => {
+    expect(service.deleteUser(1)).resolves.toEqual({
       message: 'User deleted successfully',
     });
   });
