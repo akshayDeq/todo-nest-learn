@@ -1,5 +1,5 @@
-export interface UserInterface {
+import { createUserInterface } from './user.create-user.interface';
+
+export interface UserInterface extends createUserInterface {
   id: number;
-  username: string;
-  password: string;
 }
