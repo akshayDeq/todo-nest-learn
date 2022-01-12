@@ -3,87 +3,107 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { Todo } from '../entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Users } from '../entities/user.entity';
 @Injectable()
 export class TodoService {
   constructor(
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
   ) {}
 
   // get all todo entries from database
-  async getTodos(): Promise<Todo[] | HttpException> {
+  async getTodos(request): Promise<Todo[] | HttpException> {
     try {
-      const Todos = await this.todoRepository.find();
-      // return not found exception if database is empty
-      if (!Todos.length) {
-        return new NotFoundException('No Todos in database exist');
-      }
+      const { username } = request.headers;
+      const user = await this.usersRepository.findOne({ where: { username } });
+      const Todos = await this.todoRepository.find({
+        where: { user_id: user.id },
+      });
+
       return Todos;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
   // get a todo entry by ID from database
-  async getTodo(todoId: number): Promise<Todo | HttpException> {
+  async getTodo(todoId: number, request): Promise<Todo | HttpException> {
     try {
-      const todo = await this.todoRepository.findOne({ where: { id: todoId } });
-      // return not found exception if todo with id does not exists
+      const { username } = request.headers;
+      const user = await this.usersRepository.findOne({ where: { username } });
+      const todo = await this.todoRepository.findOne({
+        where: { id: todoId, user_id: user.id },
+      });
+      // return error if todo with todoId for logged in user does not exists
       if (!todo) {
-        return new NotFoundException(`No todo with id:${todoId} exists`);
+        return new BadRequestException({ message: 'todo does not exist' });
       }
+
       return todo;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
   // create a new todo entry into database
-  async createTodo({ todoItems }: CreateTodoDto): Promise<any> {
+  async createTodo({ todoItem }: CreateTodoDto, request): Promise<any> {
     try {
+      const { username } = request.headers;
+      const user = await this.usersRepository.findOne({ where: { username } });
       await this.todoRepository.insert({
-        todoItems,
+        todoItem,
+        user_id: user.id,
       });
+
       return { message: 'Todo created successfully' };
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
   // delete a todo entry from database
-  async deleteTodo(id: number): Promise<any> {
+  async deleteTodo(todoId: number, request): Promise<any> {
     try {
+      const { username } = request.headers;
+      const user = await this.usersRepository.findOne({ where: { username } });
       // check if todo with given id exists
-      const todo = await this.todoRepository.findOne({ where: { id } });
-      console.log(todo);
-
-      // return error if todo with id does not exists
+      const todo = await this.todoRepository.findOne({
+        where: { id: todoId, user_id: user.id },
+      });
+      // return error if todo with todoId for logged in does not exists
       if (!todo) {
         return new BadRequestException({ message: 'todo does not exist' });
       }
       // delete the todo
-      await this.todoRepository.delete({ id });
+      await this.todoRepository.delete({ id: todoId });
+
       return { message: `Todo deleted successfully` };
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
   // update an existing todo
   async updateTodoById(
     todoId: number,
-    { updateTodoItems }: UpdateTodoDto,
+    { updateTodoItem }: UpdateTodoDto,
+    request,
   ): Promise<any> {
     try {
-      // check if the todo with todoId exists in database
-      const todo = await this.todoRepository.findOne({ where: { id: todoId } });
+      const { username } = request.headers;
+      const user = await this.usersRepository.findOne({ where: { username } });
+      // check if the todo with todoId for logged in user exists in database
+      const todo = await this.todoRepository.findOne({
+        where: { id: todoId, user_id: user.id },
+      });
       // return an exception if todoId does not exist
       if (!todo) {
         return new BadRequestException({ message: 'todo does not exist' });
@@ -91,8 +111,9 @@ export class TodoService {
       // update the todo data
       await this.todoRepository.update(
         { id: todoId },
-        { todoItems: updateTodoItems },
+        { todoItem: updateTodoItem },
       );
+
       return { message: 'Todo updated successfully' };
     } catch (error) {
       throw new InternalServerErrorException();
