@@ -10,12 +10,15 @@ import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { Users } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
+    @InjectRepository(Todo)
+    private todoRepository: Repository<Todo>,
     private readonly bcryptService: BcryptService,
   ) {}
 
@@ -82,6 +85,9 @@ export class UserService {
       if (!user) {
         return new BadRequestException({ message: 'User does not exist' });
       }
+      // delete the todos created by this user in todo database
+      await this.todoRepository.delete({ user_id: id });
+      // delete the user
       await this.userRepository.delete({ id });
       return { message: `User deleted successfully` };
     } catch (error) {
