@@ -6,7 +6,7 @@ import { TodoController } from './todo.controller';
 import { TodoService } from './todo.service';
 import { AuthService } from '../auth/auth.service';
 import { Users } from '../entities/user.entity';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { JwtModule } from '@nestjs/jwt';
 
 describe('TodoController', () => {

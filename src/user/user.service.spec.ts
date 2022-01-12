@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Users } from '../entities/user.entity';
 import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { Repository } from 'typeorm';
 
 describe('user service unit tests', () => {

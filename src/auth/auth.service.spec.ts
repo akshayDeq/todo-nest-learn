@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { Repository } from 'typeorm';
 import { Users } from '../entities/user.entity';
 import { AuthService } from './auth.service';

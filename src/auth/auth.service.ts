@@ -4,10 +4,11 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { Users } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { request } from 'express';
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,7 +33,7 @@ export class AuthService {
       }
       return null;
     } catch (error) {}
-    throw new InternalServerErrorException();
+    throw new BadRequestException();
   }
 
   async login(user: Users) {
@@ -59,9 +60,15 @@ export class AuthService {
     }
   }
 
-  async validateJWT(token: string): Promise<boolean> {
+  async validateJWT(request: any): Promise<boolean> {
     try {
-      await this.jwtService.verify(token);
+      await this.jwtService.verify(request.headers.bearer_token, {
+        secret: process.env.JWT_SECRET_KEY,
+      });
+      const payload = await this.jwtService.decode(
+        request.headers.bearer_token,
+      );
+      request.headers.username = payload['username'];
       return true;
     } catch (error) {
       return false;

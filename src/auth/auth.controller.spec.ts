@@ -4,7 +4,7 @@ import { Users } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { JwtModule } from '@nestjs/jwt';
 
 describe('AuthController', () => {

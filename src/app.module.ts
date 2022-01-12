@@ -7,8 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Todo } from './entities/todo.entity';
 import { Users } from './entities/user.entity';
 import { UserModule } from './user/user.module';
-import { BcryptService } from './utilities/bcrypt/bcrypt.utility';
-import { BcryptModule } from './utilities/bcrypt/bcrypt.module';
+import { BcryptService } from './utility/bcrypt/bcrypt.utility';
+import { BcryptModule } from './utility/bcrypt/bcrypt.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({

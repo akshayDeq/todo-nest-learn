@@ -3,7 +3,7 @@ import { Users } from '../entities/user.entity';
 import { UserController } from './user.controller';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BcryptService } from '../utilities/bcrypt/bcrypt.utility';
+import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
