@@ -3,7 +3,6 @@ import {
   ConflictException,
   HttpException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,7 +29,7 @@ export class UserService {
       }
       return users;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
@@ -44,7 +43,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
@@ -70,7 +69,7 @@ export class UserService {
       }
       return new ConflictException({ message: 'User already exists' });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
@@ -86,7 +85,7 @@ export class UserService {
       await this.userRepository.delete({ id });
       return { message: `User deleted successfully` };
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
@@ -99,7 +98,7 @@ export class UserService {
       }
       return true;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 }
