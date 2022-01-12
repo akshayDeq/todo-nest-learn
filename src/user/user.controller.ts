@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { Users } from '../entities/user.entity';
-import { LoggingInterceptor } from '../logger/logger.interceptor';
+import { LoggingInterceptor } from '../utility/logger/logger.interceptor';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 
