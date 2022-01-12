@@ -35,7 +35,7 @@ export class AuthService {
     throw new BadRequestException();
   }
 
-  async login(user: Users) {
+  async login(user: Users): Promise<any> {
     try {
       const userValidation = await this.validateUser(user);
       if (!userValidation) {
