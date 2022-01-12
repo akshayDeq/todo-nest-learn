@@ -8,7 +8,6 @@ import { BcryptService } from '../utility/bcrypt/bcrypt.utility';
 import { Users } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { request } from 'express';
 @Injectable()
 export class AuthService {
   constructor(

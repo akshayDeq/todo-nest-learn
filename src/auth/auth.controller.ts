@@ -1,10 +1,9 @@
 import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Users } from '../entities/user.entity';
-import { LoggingInterceptor } from '../logger/logger.interceptor';
-
+// import { LoggingInterceptor } from '../utility/logger/logger.interceptor';
 @Controller('auth')
-@UseInterceptors(LoggingInterceptor)
+// @UseInterceptors(LoggingInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
